@@ -1,0 +1,584 @@
+
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<title>MoonBet Казино Полная Версия</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            
+background: radial-gradient(circle at center, #2b1055, #7597de);
+overflow-x: hidden;
+position: relative;
+
+            overflow-x: hidden;
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+        }
+        header {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            margin: 20px auto;
+            background: rgba(0, 0, 0, 0.7);
+            max-width: 500px;
+            border-radius: 15px;
+        }
+        input, button, select {
+            padding: 10px;
+            margin: 10px 5px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: none;
+            width: 80%;
+            max-width: 300px;
+        }
+        .hidden { display: none; }
+        .menu-button {
+            padding: 15px 25px;
+            margin: 15px;
+            background: #5C6BC0;
+            font-size: 18px;
+            color: white;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .menu-button:hover { background: #7986CB; }
+        .reels, .reels-fruit {
+            font-size: 50px;
+            margin: 20px 0;
+        }
+        .reels span, .reels-fruit span {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            margin: 0 5px;
+            background: #fff;
+            color: #000;
+            border-radius: 10px;
+            line-height: 60px;
+        }
+        #bigWin {
+            font-size: 30px;
+            color: gold;
+            animation: flash 1s infinite;
+            margin-top: 10px;
+        }
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        #message { margin-top: 20px; font-size: 28px; color: yellow; }
+
+        @media (max-width: 600px) {
+            header { font-size: 28px; padding: 15px; }
+            .container { margin: 10px; padding: 15px; }
+            .menu-button { font-size: 16px; padding: 12px 20px; margin: 10px; }
+            input, button, select { width: 90%; font-size: 14px; }
+            .reels span, .reels-fruit span {
+                width: 50px; height: 50px; line-height: 50px; font-size: 40px;
+            }
+        }
+    
+.stars {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    box-shadow: 0 0 2px white;
+    animation: moveStars 10s linear infinite;
+}
+@keyframes moveStars {
+    from { transform: translateY(0); }
+    to { transform: translateY(100vh); }
+}
+
+</style>
+<style>
+.modal {
+  display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+  width: 100%; height: 100%; overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+}
+.modal-content {
+  background-color: #1a237e;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 90%;
+  max-width: 400px;
+  color: white;
+  border-radius: 10px;
+  text-align: center;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: -10px;
+}
+.close:hover, .close:focus {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+.modal input {
+  width: 80%;
+  padding: 10px;
+  margin-top: 15px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+}
+.modal button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5C6BC0;
+  color: white;
+  cursor: pointer;
+}
+.modal button:hover {
+  background-color: #7986CB;
+}
+</style>
+</head>
+<body>
+<div class="stars" style="top:10%; left:20%;"></div>
+<div class="stars" style="top:30%; left:50%;"></div>
+<div class="stars" style="top:70%; left:80%;"></div>
+<div class="stars" style="top:50%; left:10%;"></div>
+<div class="stars" style="top:90%; left:60%;"></div>
+<div id="balanceControls" style="position: absolute; top: 20px; right: 20px; text-align: right;">
+<p>Баланс: <span id="topBalance">0.00</span> BYN</p>
+<button class="menu-button" onclick="deposit()" style="padding:8px 15px; font-size:14px;">Пополнить</button>
+<button class="menu-button" onclick="withdraw()" style="padding:8px 15px; font-size:14px;">Вывести</button>
+</div>
+<header>MoonBet Казино</header>
+<div class="container" id="authSection">
+<h2>Вход / Регистрация</h2>
+<input id="username" placeholder="Имя пользователя" type="text"/><br/>
+<input id="password" placeholder="Пароль" type="password"/><br/>
+<button onclick="register()">Регистрация</button>
+<button onclick="login()">Войти</button>
+</div>
+<div class="container hidden" id="menuSection">
+<h2>Главное меню</h2>
+<button class="menu-button" onclick="goToSlots()">Книги</button>
+<button class="menu-button" onclick="goToFruitSlots()">Фрукты</button>
+<button class="menu-button" onclick="deposit()">Пополнить баланс</button>
+<button class="menu-button" onclick="withdraw()">Вывести средства</button>
+<button class="menu-button" onclick="showAdmin()">Админ-панель</button>
+<button class="menu-button" onclick="logout()">Выйти</button>
+</div>
+<div class="container hidden" id="adminSection">
+<h2>Админ-панель</h2>
+<div id="userList"></div>
+<button onclick="backToMenu()">Назад</button>
+</div>
+<div class="container hidden" id="slotSection">
+<h2>Книги</h2>
+<p>Баланс: <span id="balance">0.00</span> BYN</p>
+<select id="betAmount">
+<option value="0.10">Ставка 0.10 BYN</option>
+<option value="0.20">Ставка 0.20 BYN</option>
+<option value="0.40">Ставка 0.40 BYN</option>
+<option value="1">Ставка 1 BYN</option>
+<option value="2">Ставка 2 BYN</option>
+<option value="5">Ставка 5 BYN</option>
+<option value="10">Ставка 10 BYN</option>
+</select><br/>
+<div class="reels" id="reels">
+<span>📖</span><span>🧿</span><span>🏺</span>
+</div>
+<div class="hidden" id="bigWin">Большой выигрыш!</div>
+<button onclick="spin()">Крутить</button>
+<button onclick="stopSpin()">Стоп</button>
+<button onclick="backToMenu()">Назад</button>
+</div>
+<div class="container hidden" id="fruitSlotSection">
+<h2>Фрукты</h2>
+<p>Баланс: <span id="balanceFruit">0.00</span> BYN</p>
+<select id="betAmountFruit">
+<option value="0.10">Ставка 0.10 BYN</option>
+<option value="0.20">Ставка 0.20 BYN</option>
+<option value="0.40">Ставка 0.40 BYN</option>
+<option value="1">Ставка 1 BYN</option>
+<option value="2">Ставка 2 BYN</option>
+<option value="5">Ставка 5 BYN</option>
+<option value="10">Ставка 10 BYN</option>
+</select><br/>
+<div class="reels-fruit" id="fruitReels">
+<span id="fr1">?</span><span id="fr2">?</span><span id="fr3">?</span>
+</div>
+<div id="message"></div>
+<button onclick="spinFruit()">Крутить</button>
+<button onclick="stopSpinFruit()">Стоп</button>
+<button onclick="backToMenu()">Назад</button>
+</div>
+<script>
+  let currentUser = null;
+  let users = JSON.parse(localStorage.getItem("moonbet_users") || "{}");
+  let fruits = ['🍉', '🍊', '🍋', '7️⃣', '🔔'];
+
+  function saveUsers() { localStorage.setItem("moonbet_users", JSON.stringify(users)); }
+
+  function register() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value;
+    if (!user || !pass) return alert("Заполните все поля!");
+    if (users[user]) return alert("Пользователь уже существует!");
+    users[user] = { password: pass, balance: 100, lastLogin: null };
+    saveUsers();
+    if (document.getElementById('topBalance')) document.getElementById('topBalance').innerText = users[currentUser].balance.toFixed(2);
+    if (document.getElementById('balanceFive')) document.getElementById('balanceFive').innerText = users[currentUser].balance.toFixed(2);
+    alert("Регистрация успешна!");
+  }
+
+  function login() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value;
+    if (!users[user] || users[user].password !== pass) {
+      alert("Неверные данные!");
+      return;
+    }
+    currentUser = user;
+    dailyBonus();
+    showMenu();
+  }
+
+  function dailyBonus() {
+    const today = new Date().toDateString();
+    if (users[currentUser].lastLogin !== today) {
+      users[currentUser].balance += 5;
+      users[currentUser].lastLogin = today;
+      saveUsers();
+    if (document.getElementById('topBalance')) document.getElementById('topBalance').innerText = users[currentUser].balance.toFixed(2);
+    if (document.getElementById('balanceFive')) document.getElementById('balanceFive').innerText = users[currentUser].balance.toFixed(2);
+      alert("Бонус за ежедневный вход: +5 BYN!");
+    }
+  }
+
+  function logout() {
+    currentUser = null;
+    document.getElementById("menuSection").classList.add("hidden");
+    document.getElementById("authSection").classList.remove("hidden");
+  }
+
+  function showMenu() {
+    document.getElementById("authSection").classList.add("hidden");
+    document.getElementById("menuSection").classList.remove("hidden");
+    updateBalance();
+  }
+
+  function updateBalance() {
+function showSection(showId) {
+    const sections = ["authSection", "menuSection", "slotSection", "fruitSlotSection", "fiveSlotSection", "adminSection"];
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (id === showId) {
+                el.classList.remove("hidden");
+                el.classList.remove("fade-out");
+                el.classList.add("fade-in");
+            } else {
+                if (!el.classList.contains("hidden")) {
+                    el.classList.remove("fade-in");
+                    el.classList.add("fade-out");
+                    setTimeout(() => el.classList.add("hidden"), 400);
+                }
+            }
+        }
+    });
+}
+
+
+
+
+
+    document.getElementById("balance").innerText = users[currentUser].balance.toFixed(2);
+    document.getElementById("balanceFruit").innerText = users[currentUser].balance.toFixed(2);
+    saveUsers();
+    if (document.getElementById('topBalance')) document.getElementById('topBalance').innerText = users[currentUser].balance.toFixed(2);
+    if (document.getElementById('balanceFive')) document.getElementById('balanceFive').innerText = users[currentUser].balance.toFixed(2);
+  }
+
+  function goToSlots() {
+    document.getElementById("menuSection").classList.add("hidden");
+    document.getElementById("slotSection").classList.remove("hidden");
+    updateBalance();
+  }
+
+  function goToFruitSlots() {
+    document.getElementById("menuSection").classList.add("hidden");
+    document.getElementById("fruitSlotSection").classList.remove("hidden");
+    updateBalance();
+  }
+
+  function backToMenu() {
+    document.getElementById("slotSection").classList.add("hidden");
+    document.getElementById("fruitSlotSection").classList.add("hidden");
+    document.getElementById("adminSection").classList.add("hidden");
+    document.getElementById("menuSection").classList.remove("hidden");
+    document.getElementById("bigWin").classList.add("hidden");
+    document.getElementById("message").innerText = "";
+  }
+
+  
+
+let spinIntervals = [];
+let isSpinning = false;
+
+function spin() {
+    if (isSpinning) return;
+    const bet = parseFloat(document.getElementById("betAmount").value);
+    if (users[currentUser].balance < bet) return alert("Недостаточно средств!");
+    users[currentUser].balance -= bet;
+    updateBalance();
+    isSpinning = true;
+document.getElementById('soundSpin').play();
+
+    const reelElements = document.querySelectorAll("#reels span");
+    const symbols = ['📖', '🧿', '🏺', '📚', '🧸'];
+    reelElements.forEach((el, idx) => {
+        spinIntervals[idx] = setInterval(() => {
+            el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+        }, 100);
+    });
+
+    setTimeout(() => { stopSpin(); }, 2000);
+}
+
+function stopSpin() {
+    if (!isSpinning) return;
+    spinIntervals.forEach(clearInterval);
+    spinIntervals = [];
+    isSpinning = false;
+    setTimeout(() => checkWin(parseFloat(document.getElementById("betAmount").value)), 300);
+}
+
+let fruitSpinIntervals = [];
+let isFruitSpinning = false;
+
+function spinFruit() {
+    if (isFruitSpinning) return;
+    const bet = parseFloat(document.getElementById("betAmountFruit").value);
+    if (users[currentUser].balance < bet) return alert("Недостаточно средств!");
+    users[currentUser].balance -= bet;
+    updateBalance();
+    isFruitSpinning = true;
+document.getElementById('soundSpin').play();
+
+    const ids = ['fr1', 'fr2', 'fr3'];
+    ids.forEach((id, idx) => {
+        fruitSpinIntervals[idx] = setInterval(() => {
+            document.getElementById(id).innerText = fruits[Math.floor(Math.random() * fruits.length)];
+        }, 100);
+    });
+
+    setTimeout(() => { stopSpinFruit(); }, 2000);
+}
+
+function stopSpinFruit() {
+    if (!isFruitSpinning) return;
+    fruitSpinIntervals.forEach(clearInterval);
+    fruitSpinIntervals = [];
+    isFruitSpinning = false;
+    setTimeout(() => checkFruitWin(parseFloat(document.getElementById("betAmountFruit").value)), 300);
+}
+
+function checkWin(bet) {
+    const [r1, r2, r3] = Array.from(document.querySelectorAll("#reels span")).map(el => el.innerText);
+    let prize = 0;
+    if (r1 === r2 && r2 === r3) prize = bet * 10;
+    else if (r1 === r2 || r2 === r3 || r1 === r3) prize = bet * 3;
+    if (prize > 0) {
+    document.getElementById('soundWin').play();
+      users[currentUser].balance += prize;
+      updateBalance();
+      if (prize > 50) {
+        document.getElementById("bigWin").classList.remove("hidden");
+        document.getElementById("bigWin").innerText = `Большой выигрыш: ${prize.toFixed(2)} BYN!`;
+      } else {
+        alert(`Вы выиграли ${prize.toFixed(2)} BYN!`);
+      }
+    }
+  }
+
+  function spinFruit() {
+    const bet = parseFloat(document.getElementById("betAmountFruit").value);
+    if (users[currentUser].balance < bet) return alert("Недостаточно средств!");
+    users[currentUser].balance -= bet;
+    updateBalance();
+
+    const ids = ['fr1', 'fr2', 'fr3'];
+    let spins = 20;
+    let interval = setInterval(() => {
+        ids.forEach(id => {
+            document.getElementById(id).innerText = fruits[Math.floor(Math.random() * fruits.length)];
+        });
+        spins--;
+        if (spins === 0) {
+            clearInterval(interval);
+            checkFruitWin(bet);
+        }
+    }, 100);
+  }
+
+  function checkFruitWin(bet) {
+    const r1 = document.getElementById('fr1').innerText;
+    const r2 = document.getElementById('fr2').innerText;
+    const r3 = document.getElementById('fr3').innerText;
+    let prize = 0;
+    if (r1 === r2 && r2 === r3) prize = bet * 10;
+    else if (r1 === r2 || r2 === r3 || r1 === r3) prize = bet * 3;
+    if (prize > 0) {
+    document.getElementById('soundWin').play();
+      users[currentUser].balance += prize;
+      updateBalance();
+      document.getElementById("message").innerText = `Вы выиграли: ${prize.toFixed(2)} BYN!`;
+    } else {
+      document.getElementById("soundLose").play();
+    document.getElementById("message").innerText = "Попробуй снова!";
+    }
+  }
+
+  function deposit() {
+    let amount = parseFloat(prompt("Введите сумму пополнения (BYN):"));
+    if (isNaN(amount) || amount <= 0) return alert("Некорректная сумма!");
+    users[currentUser].balance += amount;
+    saveUsers();
+    if (document.getElementById('topBalance')) document.getElementById('topBalance').innerText = users[currentUser].balance.toFixed(2);
+    if (document.getElementById('balanceFive')) document.getElementById('balanceFive').innerText = users[currentUser].balance.toFixed(2);
+    updateBalance();
+    alert(`Баланс пополнен на ${amount.toFixed(2)} BYN!`);
+  }
+
+  function withdraw() {
+    let amount = parseFloat(prompt("Введите сумму вывода (BYN):"));
+    if (isNaN(amount) || amount <= 0) return alert("Некорректная сумма!");
+    if (users[currentUser].balance < amount) return alert("Недостаточно средств!");
+    users[currentUser].balance -= amount;
+    saveUsers();
+    if (document.getElementById('topBalance')) document.getElementById('topBalance').innerText = users[currentUser].balance.toFixed(2);
+    if (document.getElementById('balanceFive')) document.getElementById('balanceFive').innerText = users[currentUser].balance.toFixed(2);
+    updateBalance();
+    alert(`Вы успешно вывели ${amount.toFixed(2)} BYN!`);
+  }
+
+  function showAdmin() {
+    if (currentUser !== "admin") {
+      alert("Нет доступа!");
+      return;
+    }
+    document.getElementById("menuSection").classList.add("hidden");
+    document.getElementById("adminSection").classList.remove("hidden");
+    renderUserList();
+  }
+
+  function renderUserList() {
+    let html = "<h3>Пользователи:</h3><ul>";
+    for (let user in users) {
+      html += `<li>${user}: ${users[user].balance.toFixed(2)} BYN</li>`;
+    }
+    html += "</ul>";
+    document.getElementById("userList").innerHTML = html;
+  }
+
+function openModal(id) {
+  document.getElementById(id).style.display = "block";
+}
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+function deposit() {
+  openModal('depositModal');
+}
+function withdraw() {
+  openModal('withdrawModal');
+}
+function confirmDeposit() {
+  let amount = parseFloat(document.getElementById('depositAmount').value);
+  if (isNaN(amount) || amount <= 0) return alert("Некорректная сумма!");
+  users[currentUser].balance += amount;
+  saveUsers();
+  updateBalance();
+  closeModal('depositModal');
+  alert(`Баланс пополнен на ${amount.toFixed(2)} BYN!`);
+}
+function confirmWithdraw() {
+  let amount = parseFloat(document.getElementById('withdrawAmount').value);
+  if (isNaN(amount) || amount <= 0) return alert("Некорректная сумма!");
+  if (users[currentUser].balance < amount) return alert("Недостаточно средств!");
+  users[currentUser].balance -= amount;
+  saveUsers();
+  updateBalance();
+  closeModal('withdrawModal');
+  alert(`Вы успешно вывели ${amount.toFixed(2)} BYN!`);
+}</script>
+<audio id="soundSpin" preload="auto" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_ef4e98c0d7.mp3"></audio>
+<audio id="soundWin" preload="auto" src="https://cdn.pixabay.com/download/audio/2022/01/23/audio_c8db98a8f0.mp3"></audio>
+<audio id="soundLose" preload="auto" src="https://cdn.pixabay.com/download/audio/2022/03/22/audio_6cc80c7e30.mp3"></audio>
+<!-- Deposit Modal -->
+<div class="modal" id="depositModal">
+<div class="modal-content">
+<span class="close" onclick="closeModal('depositModal')">×</span>
+<h3>Пополнить баланс</h3>
+<input id="depositAmount" placeholder="Сумма (BYN)" type="number"/>
+<button onclick="confirmDeposit()">Подтвердить</button>
+</div>
+</div>
+<!-- Withdraw Modal -->
+<div class="modal" id="withdrawModal">
+<div class="modal-content">
+<span class="close" onclick="closeModal('withdrawModal')">×</span>
+<h3>Вывести средства</h3>
+<input id="withdrawAmount" placeholder="Сумма (BYN)" type="number"/>
+<button onclick="confirmWithdraw()">Подтвердить</button>
+</div>
+</div>
+<div class="container">
+<h3>Ваша реферальная ссылка:</h3>
+<p id="refLink">https://moonbet.com/?ref=USER123</p>
+<button onclick="copyRefLink()">Скопировать ссылку</button>
+</div>
+<script>
+function copyRefLink() {
+    const refText = document.getElementById("refLink").textContent;
+    navigator.clipboard.writeText(refText).then(() => {
+        alert("Ссылка скопирована: " + refText);
+    });
+}
+</script>
+</body>
+</html>
